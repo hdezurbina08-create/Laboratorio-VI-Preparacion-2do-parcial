@@ -1,0 +1,133 @@
+openapi: 3.0.3
+info:
+  title: API Biblioteca
+  version: 1.0.0
+  description: API para la administración de libros de una biblioteca.
+paths:
+  /api/v1/libros:
+    get:
+      summary: Consultar todos los libros
+      responses:
+        '200':
+          description: Lista de libros obtenida exitosamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LibroResponse'
+    post:
+      summary: Registrar un nuevo libro
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LibroRequest'
+      responses:
+        '201':
+          description: Libro registrado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LibroResponse'
+        '400':
+          description: Datos de solicitud inválidos
+
+  /api/v1/libros/buscar:
+    get:
+      summary: Consultar libros por título
+      parameters:
+        - name: titulo
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Libros encontrados
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LibroResponse'
+
+  /api/v1/libros/{id}:
+    put:
+      summary: Actualizar un libro existente
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LibroRequest'
+      responses:
+        '200':
+          description: Libro actualizado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LibroResponse'
+        '404':
+          description: Libro no encontrado
+    delete:
+      summary: Eliminar un libro por ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Libro eliminado exitosamente
+        '404':
+          description: Libro no encontrado
+
+components:
+  schemas:
+    LibroRequest:
+      type: object
+      required:
+        - titulo
+        - autor
+        - isbn
+        - anioPublicacion
+        - estado
+      properties:
+        titulo:
+          type: string
+        autor:
+          type: string
+        isbn:
+          type: string
+        anioPublicacion:
+          type: integer
+        estado:
+          type: string
+          example: DISPONIBLE
+    LibroResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        titulo:
+          type: string
+        autor:
+          type: string
+        isbn:
+          type: string
+        anioPublicacion:
+          type: integer
+        estado:
+          type: string

@@ -1,0 +1,196 @@
+openapi: 3.0.3
+info:
+  title: API de Sistema de Reservas de Hotel
+  description: Especificación OpenAPI para la gestión de habitaciones y reservas de hospedaje.
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080/api
+    description: Servidor Local de Desarrollo
+
+paths:
+  /habitaciones:
+    get:
+      summary: Buscar habitaciones disponibles
+      description: Consulta las habitaciones disponibles filtrando por tipo y fechas de estancia.
+      parameters:
+        - name: tipo
+          in: query
+          required: false
+          description: Tipo de habitación (Ej. SIMPLE, DOBLE, SUITE)
+          schema:
+            type: string
+            enum: [SIMPLE, DOBLE, SUITE]
+        - name: fechaInicio
+          in: query
+          required: false
+          description: Fecha de entrada (AAAA-MM-DD)
+          schema:
+            type: string
+            format: date
+            example: "2026-10-01"
+        - name: fechaFin
+          in: query
+          required: false
+          description: Fecha de salida (AAAA-MM-DD)
+          schema:
+            type: string
+            format: date
+            example: "2026-10-05"
+      responses:
+        '200':
+          description: Lista de habitaciones disponibles encontrada
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Habitacion'
+
+  /reservas:
+    get:
+      summary: Obtener todas las reservas
+      description: Retorna la lista general de reservas registradas en el sistema.
+      responses:
+        '200':
+          description: Lista de reservas obtenida con éxito
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Reserva'
+
+    post:
+      summary: Crear una nueva reserva
+      description: Registra una reserva de habitación para un cliente.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NuevaReserva'
+      responses:
+        '201':
+          description: Reserva creada con éxito
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reserva'
+        '400':
+          description: Datos de la reserva inválidos o habitación no disponible
+
+  /reservas/{id}:
+    get:
+      summary: Obtener detalles de una reserva
+      description: Retorna la información completa de una reserva por su ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID único de la reserva
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Reserva encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reserva'
+        '404':
+          description: Reserva no encontrada
+
+    delete:
+      summary: Cancelar una reserva
+      description: Cancela una reserva existente según su ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID de la reserva a cancelar
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Reserva cancelada exitosamente
+        '404':
+          description: Reserva no encontrada
+
+components:
+  schemas:
+    Habitacion:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 101
+        numero:
+          type: string
+          example: "302-A"
+        tipo:
+          type: string
+          example: "SUITE"
+        precioNoche:
+          type: number
+          format: double
+          example: 450.00
+        disponible:
+          type: boolean
+          example: true
+
+    NuevaReserva:
+      type: object
+      required:
+        - habitacionId
+        - nombreHuesped
+        - fechaEntrada
+        - fechaSalida
+      properties:
+        habitacionId:
+          type: integer
+          format: int64
+          example: 101
+        nombreHuesped:
+          type: string
+          example: "Yeimy Hernández"
+        fechaEntrada:
+          type: string
+          format: date
+          example: "2026-10-01"
+        fechaSalida:
+          type: string
+          format: date
+          example: "2026-10-05"
+
+    Reserva:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1001
+        habitacionId:
+          type: integer
+          format: int64
+          example: 101
+        nombreHuesped:
+          type: string
+          example: "Yeimy Hernández"
+        fechaEntrada:
+          type: string
+          format: date
+          example: "2026-10-01"
+        fechaSalida:
+          type: string
+          format: date
+          example: "2026-10-05"
+        total:
+          type: number
+          format: double
+          example: 1800.00
+        estado:
+          type: string
+          example: "CONFIRMADA"

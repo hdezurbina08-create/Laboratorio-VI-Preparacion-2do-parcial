@@ -45,7 +45,7 @@ public class CursoRepository {
     }
 
     public boolean existsById(Long id) {
-        // TODO Auto-generated method stub
+    
         throw new UnsupportedOperationException("Unimplemented method 'existsById'");
     }
 }

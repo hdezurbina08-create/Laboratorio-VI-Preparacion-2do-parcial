@@ -26,6 +26,7 @@ paths:
               $ref: '#/components/schemas/LibroRequest'
       responses:
         '201':
+      
           description: Libro registrado exitosamente
           content:
             application/json:
